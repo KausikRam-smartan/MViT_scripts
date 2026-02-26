@@ -21,6 +21,16 @@ import argparse
 import mlflow
 import mlflow.pytorch
 
+import random
+
+def set_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
 # Move the model to the appropriate device (GPU or CPU)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -122,7 +132,7 @@ def load_pretrained_model():
     # num_classes = 21  # Replace with your own number of classes
     # model.head[-1] = nn.Linear(in_features, num_classes)
     model.head[-1] = nn.Sequential(
-        nn.Dropout(p=0.8),
+        nn.Dropout(p=0.75),
         nn.Linear(in_features, num_classes)
     )
 
@@ -140,8 +150,8 @@ def load_pretrained_model():
     # Optimizer
     # =========================
 
-    optimizer_name = "Adam"  # This should be defined before or passed as an argument
-    learning_rate = 1e-4  # Set learning rate as per your requirement
+    # optimizer_name = "Adam"  # This should be defined before or passed as an argument
+    # learning_rate = 1e-4  # Set learning rate as per your requirement
 
 
 
@@ -427,3 +437,4 @@ if __name__ == "__main__":
     train_model(model,optimizer)
 
     mlflow.end_run()
+
