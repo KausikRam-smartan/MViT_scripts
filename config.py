@@ -5,14 +5,16 @@ import torch.nn as nn
 # Config
 # =========================
 # Train Settings
-num_classes     = 116
-num_epochs      = 10
+num_classes     = 9
+num_epochs      = 12
 learning_rate   = 1e-4
 # optimizer_name  = "Adam"
 optimizer_name  = "AdamW"
 criterion       = nn.CrossEntropyLoss()
 frames_per_clip = 32
-K = 9
+K =5
+dropout = 0.7
+weight_decay = 0.05
 
 # Paths
 current_directory   = "/home/smartan5070/Downloads/SlowfastTrainer-main/Models/Testing_21Classes_Cam10718"
@@ -25,8 +27,8 @@ log_path            = os.path.join(current_directory, "Trial_21class_12_12_25_lo
 
 
 # Data
-train_datapath = "datasets/dataset_115_class/115_class_balanced_script_70_15_id/train"
-val_datapath   = "datasets/dataset_115_class/115_class_balanced_script_70_15_id/val"
+train_datapath = "datasets/heirarchical_dataset_SET_217_cls/train"
+val_datapath   = "datasets/heirarchical_dataset_SET_217_cls/val"
 
 # Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -132,9 +134,9 @@ try:
     from torchvision.transforms import Compose
     transform = Compose([
         ResizeVideo((224, 224)),                               # (C,T,H,W)
-        RandomHorizontalFlip(p=0.8),
-        RandomRotateVideo(degrees=60, p=0.8),
-        RandomShearVideo(shear_degrees=20, p=0.8),
+        RandomHorizontalFlip(p=0.9),
+        RandomRotateVideo(degrees=15, p=0.9),
+        RandomShearVideo(shear_degrees=20, p=0.9),
         NormalizeVideo([0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
     ])
 except Exception:
@@ -144,9 +146,9 @@ except Exception:
     from torchvision.transforms._transforms_video import NormalizeVideo, RandomHorizontalFlipVideo
     transform = Compose([
         Resize((224, 224)),                                    # Works for some torchvision versions on (C,T,H,W)
-        RandomHorizontalFlipVideo(p=0.8),
-        RandomRotateVideo(degrees=15, p=0.8),
-        RandomShearVideo(shear_degrees=15, p=0.8),
+        RandomHorizontalFlipVideo(p=0.9),
+        RandomRotateVideo(degrees=15, p=0.9),
+        RandomShearVideo(shear_degrees=15, p=0.9),
         NormalizeVideo([0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
     ])
 

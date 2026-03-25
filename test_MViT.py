@@ -29,8 +29,9 @@ frames_per_clip = 16
 model_path = "/home/smartan5070/Downloads/SlowfastTrainer-main/Models/Trial_31class_11_12_25.pt"
 
 # Defining the test datapath
-test_datapath = "/home/smartan5070/Downloads/SlowfastTrainer-main/unseen_test_set_data/correct_videos 1/cropped_correct_videos"
-
+# test_datapath = "/home/smartan5070/Downloads/SlowfastTrainer-main/unseen_test_set_data/correct_videos 1/cropped_correct_videos"
+# test_datapath = "unseen_test_set_data/correct_videos 1/heirarchical_test_set/set_2"
+test_datapath = "datasets/TEST_SET_217"
 
 # ------------------------------------------------------
 # LOAD TRAINING CLASS ORDER (SAME AS TRAINING)
@@ -57,6 +58,21 @@ class YourVideoDataset(Dataset):
         self.labels = []
         self.class_to_idx = {}
         self._build_index()
+
+    # def _build_index(self):
+    #     print("########### BUILD INDEX TRACKING ###########")
+    #     classes = sorted([d for d in os.listdir(self.root_dir) if os.path.isdir(os.path.join(self.root_dir, d))])
+    #     print(f" |Classes: {classes}")
+    #     self.class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
+    #     print(f" |Class_to_idx: {self.class_to_idx}")
+    #     for cls_name in classes:
+    #         cls_dir = os.path.join(self.root_dir, cls_name)
+    #         print(f" |Class_directory: {cls_dir}")
+    #         for fname in os.listdir(cls_dir):
+    #             if fname.lower().endswith(".mp4"):
+    #                 self.video_paths.append(os.path.join(cls_dir, fname))
+    #                 self.labels.append(self.class_to_idx[cls_name])
+    #     print(f" |Num videos: {len(self.video_paths)}")
 
     def _build_index(self):
         print("########### BUILD INDEX TRACKING (TRAINING ORDER) ###########")
@@ -207,17 +223,25 @@ def run_infernce(test_loader):
     return all_labels, all_predictions
 
 def plot_confusion_matrix(conf_mat, class_names, save_path):
-    plt.figure(figsize=(14, 12))
-    sns.heatmap(conf_mat, annot=True, fmt="d", cmap="Blues",
-                xticklabels=class_names, yticklabels=class_names)
+    plt.figure(figsize=(16, 14))
+    sns.heatmap(
+        conf_mat,
+        annot=True,
+        fmt="d",
+        cmap="magma",
+        xticklabels=class_names,
+        yticklabels=class_names,
+        linewidths=0.5,
+        linecolor="black"
+    )
 
     plt.xlabel("Predicted", fontsize=14)
     plt.ylabel("True", fontsize=14)
     plt.title("Confusion Matrix", fontsize=16)
     plt.tight_layout()
-
     plt.savefig(save_path, dpi=300)
     plt.close()
+
 
 
 
@@ -318,8 +342,10 @@ if __name__ == "__main__":
     print(training_description)
     
     # 1️⃣ Set experiment FIRST
-    mlflow.set_experiment("MViT_Testing")
+    # mlflow.set_experiment("MViT_Testing")
 
+    # mlflow.set_experiment("SET-VIDEO-ACTION-CLASSIFICATION-TEST")
+    mlflow.set_experiment("SET_217_class-VIDEO-ACTION-CLASSIFICATION-TEST")
     # 2️⃣ Create ONE clean inference run
     with mlflow.start_run(run_name=f"MViT_{run_id}_inference"):
 
@@ -379,4 +405,5 @@ if __name__ == "__main__":
 
         # Log the confusion matrix image
         mlflow.log_artifact(cm_path)
+
 

@@ -132,7 +132,7 @@ def load_pretrained_model():
     # num_classes = 21  # Replace with your own number of classes
     # model.head[-1] = nn.Linear(in_features, num_classes)
     model.head[-1] = nn.Sequential(
-        nn.Dropout(p=0.75),
+        nn.Dropout(p=dropout),
         nn.Linear(in_features, num_classes)
     )
 
@@ -162,7 +162,7 @@ def load_pretrained_model():
         optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=learning_rate,
-        weight_decay=0.05
+        weight_decay=weight_decay
         )
     else:
         raise ValueError(f"Unsupported optimizer: {optimizer_name}")
@@ -392,7 +392,9 @@ if __name__ == "__main__":
     # Initialize MLflow
     # ======================
 
-    mlflow.set_experiment("VIDEO-ACTION-CLASSIFICATION")
+    # mlflow.set_experiment("VIDEO-ACTION-CLASSIFICATION")
+    mlflow.set_experiment("SET_217_class-VIDEO-ACTION-CLASSIFICATION")
+    # mlflow.set_experiment("SET-VIDEO-ACTION-CLASSIFICATION")
     run = mlflow.start_run(run_name=f"MViT-Finetune-{int(time.time())}")
     run_id = run.info.run_id
 
@@ -414,7 +416,9 @@ if __name__ == "__main__":
     # Log hyperparameters
     mlflow.log_params({
         "epochs": num_epochs,
-        "K" : K,
+        "Layers unfreezed" : K,
+        "weight_decay": weight_decay,
+        "Dropout": dropout,
         "Num_classes": num_classes,
         "optimizer": optimizer_name,
         "learning_rate": learning_rate,
